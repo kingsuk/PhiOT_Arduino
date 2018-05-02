@@ -19,6 +19,7 @@ IPAddress subnet(255, 255, 255, 0);
 
 //No of seconds system will be busy trying to figure out if it is connected to network or not.
 int maxTimeOut = 20;
+int maxNoOfWifiToScan = 4;
 
 //Name of the access point to be created.
 const char *AccessPointName = "PhiOTConnect";
@@ -26,7 +27,7 @@ const char *AccessPointName = "PhiOTConnect";
 ESP8266WebServer server(80);
 
 //Mqtt configs
-const char* mqtt_server = "";//Your mqtt server goes here
+const char* mqtt_server = "phiot.phibasis.com";//Your mqtt server goes here
 
 String token = "";
 String publishTopic = "";
@@ -93,8 +94,8 @@ void PhiOT::CheckingConnectionStatusWithDelay()
 void PhiOT::SwitchOffAccessPoint()
 {
   Serial.println("Switching off Access Point.");
-  WiFi.softAPdisconnect(false);
-  WiFi.enableAP(false);
+  //WiFi.softAPdisconnect(false);
+  //WiFi.enableAP(false);
 }
 
 void PhiOT::setAccessPoint()
@@ -124,7 +125,41 @@ void PhiOT::ServerRouters()
 
   });
   //server.on("/checkstatus", checkConnectionStatus);
-  //server.on("/wifiscan", wifiScan);
+  server.on("/wifiscan", [this](){
+
+    Serial.println("scan start");
+
+    int n = WiFi.scanNetworks();
+    
+    if (n == 0)
+       server.send(200, "text/plain", "No networks found!");
+    else
+    {
+        Serial.print(n);
+        Serial.println(" networks found");
+
+        StaticJsonBuffer<400> jsonBuffer;
+        JsonArray& array = jsonBuffer.createArray();
+        
+        for (int i = 0; i < n; ++i)
+        {
+            JsonObject& root = jsonBuffer.createObject();
+
+            root["ssid"] = WiFi.SSID(i);
+            root["rssi"] = WiFi.RSSI(i);
+            root["encryptionType"] = WiFi.encryptionType(i);
+            
+            array.add(root);
+            if(i==maxNoOfWifiToScan)
+                break;
+        }
+
+        char wifiInfo[200];
+        array.printTo(wifiInfo, sizeof(wifiInfo));
+        server.send(200, "text/plain", wifiInfo);
+    }
+    
+  });
 }
 
 void PhiOT::WifiConnectionSetup(String ssid, String password) 
