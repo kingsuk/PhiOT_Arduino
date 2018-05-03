@@ -119,7 +119,7 @@ void PhiOT::ServerRouters()
 {
   server.on("/wificonnect", [this]() {
 
-    server.send(200, "text/plain", server.arg("ssid")+"\n"+server.arg("password"));
+    server.send(200, "text/plain", "Network credentials received. Check MCU led for status.");
     
     PhiOT::WifiConnectionSetup(server.arg("ssid"), server.arg("password"));
 
