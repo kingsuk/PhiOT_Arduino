@@ -94,8 +94,8 @@ void PhiOT::CheckingConnectionStatusWithDelay()
 void PhiOT::SwitchOffAccessPoint()
 {
   Serial.println("Switching off Access Point.");
-  //WiFi.softAPdisconnect(false);
-  //WiFi.enableAP(false);
+  WiFi.softAPdisconnect(false);
+  WiFi.enableAP(false);
 }
 
 void PhiOT::setAccessPoint()
