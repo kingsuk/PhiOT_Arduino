@@ -9,7 +9,7 @@
 #include <thirdparty/ArduinoJson/ArduinoJson.h>
 
 
-int indicatingLed=LED_BUILTIN;
+int indicatingLed=16;
 bool NetworkConnected = false;
 
 //Wifi Clients Configs
@@ -27,7 +27,7 @@ const char *AccessPointName = "PhiOTConnect";
 ESP8266WebServer server(80);
 
 //Mqtt configs
-const char* mqtt_server = "phiot.phibasis.com";//Your mqtt server goes here
+const char* mqtt_server = "mqtt.eclipseprojects.io";//Your mqtt server goes here
 
 String token = "";
 String publishTopic = "";
